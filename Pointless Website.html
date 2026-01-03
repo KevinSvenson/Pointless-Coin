@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pointless Coin</title>
+  <meta name="description" content="• < pointless coin" />
+
+  <style>
+    :root{
+      --bg:#07070a;
+      --fg:#e9e9ef;
+      --muted:rgba(233,233,239,.62);
+      --hair:rgba(233,233,239,.10);
+      --card:rgba(233,233,239,.03);
+      --shadow:0 24px 80px rgba(0,0,0,.55);
+      --radius:18px;
+      --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+      --sans:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+
+    body{
+      margin:0;
+      background:
+        radial-gradient(1200px 800px at 10% 10%, rgba(255,255,255,.04), transparent 55%),
+        radial-gradient(900px 700px at 80% 30%, rgba(255,255,255,.03), transparent 60%),
+        radial-gradient(1000px 900px at 40% 90%, rgba(255,255,255,.02), transparent 60%),
+        var(--bg);
+      color:var(--fg);
+      font-family:var(--sans);
+      overflow-x:hidden;
+    }
+
+    /* subtle grain */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+      mix-blend-mode:overlay;
+      opacity:.18;
+    }
+
+    .wrap{
+      min-height:100%;
+      display:grid;
+      place-items:center;
+      padding:48px 18px;
+    }
+
+    .shell{
+      width:min(860px,100%);
+      border:1px solid var(--hair);
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+
+    /* faint animated scanline */
+    .shell::after{
+      content:"";
+      position:absolute;
+      inset:-40% 0;
+      background:linear-gradient(
+        180deg,
+        transparent 0%,
+        rgba(255,255,255,.06) 48%,
+        transparent 55%
+      );
+      transform:translateY(-60%);
+      animation:scan 6.5s linear infinite;
+      opacity:.20;
+      pointer-events:none;
+    }
+    @keyframes scan{
+      0%{transform:translateY(-60%)}
+      100%{transform:translateY(60%)}
+    }
+
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:18px;
+      border-bottom:1px solid var(--hair);
+      backdrop-filter:blur(8px);
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      cursor:default;
+      min-width:0;
+    }
+
+    /* Pointless mark: "• <" (space included) */
+    .mark{
+      font-family:var(--mono);
+      font-size:14px;
+      letter-spacing:0;
+      opacity:.82;
+      user-select:none;
+      white-space:nowrap;
+    }
+
+    .nav{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    button, a.btn{
+      appearance:none;
+      border:1px solid var(--hair);
+      background:rgba(255,255,255,.02);
+      color:var(--fg);
+      border-radius:999px;
+      padding:10px 12px;
+      font-size:12px;
+      font-family:var(--mono);
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      transition:transform .08s ease, border-color .2s ease, background .2s ease, opacity .2s ease;
+      user-select:none;
+    }
+
+    button:hover, a.btn:hover{
+      border-color:rgba(233,233,239,.22);
+      background:rgba(255,255,255,.04);
+      transform:translateY(-1px);
+    }
+    button:active, a.btn:active{transform:translateY(0); opacity:.9}
+    button:focus-visible, a.btn:focus-visible{outline:2px solid rgba(233,233,239,.22); outline-offset:2px}
+
+    main{
+      padding:34px 18px 22px;
+      display:grid;
+      gap:18px;
+    }
+
+    .hero{
+      padding:26px 18px 18px;
+      border:1px solid var(--hair);
+      background:var(--card);
+      border-radius:calc(var(--radius) - 6px);
+    }
+
+    .title{
+      font-family:var(--mono);
+      font-weight:700;
+      font-size:clamp(32px, 7vw, 64px);
+      letter-spacing:.04em;
+      margin:0;
+      line-height:1.05;
+    }
+
+    .subtitle{
+      margin:12px 0 0;
+      font-family:var(--mono);
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
+      max-width:52ch;
+    }
+
+    .mini{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+      margin-top:16px;
+    }
+
+    .row{
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      padding:12px;
+      border:1px solid var(--hair);
+      border-radius:14px;
+      background:rgba(255,255,255,.02);
+    }
+
+    .row .k, .row .v{
+      font-family:var(--mono);
+      font-size:12px;
+    }
+    .row .k{opacity:.7}
+    .row .v{opacity:.95; text-align:right}
+
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:18px;
+      align-items:center;
+    }
+
+    /* Blank ultra-minimal button */
+    .blank{
+      width:36px;
+      height:36px;
+      padding:0;
+      border-radius:999px;
+    }
+
+    footer{
+      padding:16px 18px;
+      border-top:1px solid var(--hair);
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap:12px;
+    }
+
+    .fine{
+      font-family:var(--mono);
+      font-size:11px;
+      color:var(--muted);
+      max-width:70ch;
+      line-height:1.5;
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%);
+      background:rgba(10,10,14,.78);
+      border:1px solid rgba(233,233,239,.12);
+      backdrop-filter:blur(10px);
+      color:var(--fg);
+      font-family:var(--mono);
+      font-size:12px;
+      padding:10px 12px;
+      border-radius:999px;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .18s ease, transform .18s ease;
+      box-shadow:0 18px 60px rgba(0,0,0,.55);
+      white-space:nowrap;
+      max-width:calc(100vw - 24px);
+      overflow:hidden;
+      text-overflow:ellipsis;
+      z-index:50;
+    }
+    .toast.show{opacity:1; transform:translateX(-50%) translateY(-2px)}
+
+    .hidden{display:none !important;}
+
+    @media (min-width:780px){
+      header, footer{padding:18px 26px}
+      main{padding:44px 26px 26px}
+      .hero{padding:30px 22px 22px}
+      .mini{grid-template-columns:1fr 1fr}
+    }
+
+    /* ===== ULTRA MODE (everything gone, logo centered) ===== */
+    body.ultra{
+      background:var(--bg);
+      display:grid;
+      place-items:center;
+    }
+    body.ultra::before{opacity:.14;}
+    body.ultra .wrap{padding:0;}
+    body.ultra .shell{display:none;}
+    body.ultra .toast{display:none;}
+
+    .ultra-only{
+      display:none;
+      font-family:var(--mono);
+      font-size:22px;
+      opacity:.82;
+      user-select:none;
+      white-space:nowrap;
+    }
+    body.ultra .ultra-only{display:block;}
+
+    /* ===== BUY MODAL ===== */
+    .modal-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.55);
+      backdrop-filter:blur(8px);
+      display:none;
+      place-items:center;
+      z-index:40;
+      padding:18px;
+    }
+    .modal-overlay.open{display:grid;}
+
+    .modal{
+      width:min(520px, 100%);
+      border:1px solid var(--hair);
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      border-radius:18px;
+      box-shadow:0 24px 80px rgba(0,0,0,.6);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .modal-head{
+      padding:14px 16px;
+      border-bottom:1px solid var(--hair);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .modal-title{
+      font-family:var(--mono);
+      font-size:12px;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      opacity:.85;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .modal-close{
+      width:34px;
+      height:34px;
+      padding:0;
+      border-radius:999px;
+    }
+
+    .modal-body{
+      padding:16px;
+      display:grid;
+      gap:10px;
+    }
+
+    .modal-body a.btn{
+      width:100%;
+      justify-content:space-between;
+    }
+
+    .modal-foot{
+      padding:12px 16px 14px;
+      border-top:1px solid var(--hair);
+      font-family:var(--mono);
+      font-size:11px;
+      color:var(--muted);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="shell" role="application" aria-label="Pointless Coin landing page">
+      <header>
+        <!-- Removed redundant "POINTLESS" text next to symbol -->
+        <div class="brand" title="Pointless Coin">
+          <span class="mark">• &lt;</span>
+        </div>
+
+        <nav class="nav" aria-label="Actions">
+          <a class="btn" href="https://x.com/apointlesscoin" target="_blank" rel="noreferrer">X ↗</a>
+          <button id="copyCa" type="button">Copy CA</button>
+          <button id="buy" type="button">Buy (pointless)</button>
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero" aria-label="Hero">
+          <h1 class="title">POINTLESS COIN</h1>
+
+          <p class="subtitle">
+            No roadmap.<br />
+            No vision.<br />
+            No reason.
+          </p>
+
+          <div class="mini" aria-label="Facts that do not help">
+            <div class="row">
+              <div class="k">What is it?</div>
+              <div class="v">Nothing important.</div>
+            </div>
+            <div class="row">
+              <div class="k">Why exist?</div>
+              <div class="v">It doesn’t need a reason.</div>
+            </div>
+            <div class="row">
+              <div class="k">Utility?</div>
+              <div class="v">No.</div>
+            </div>
+            <div class="row">
+              <div class="k">Roadmap?</div>
+              <div class="v">Probably not.</div>
+            </div>
+          </div>
+
+          <div class="actions" aria-label="Secondary actions">
+            <!-- Removed "Say less" button -->
+            <button id="random" type="button">Random statement</button>
+
+            <!-- Blank button that nukes everything -->
+            <button id="ultraBtn" class="blank" type="button" aria-label="Ultra minimal"></button>
+          </div>
+        </section>
+
+        <section id="more" class="hero" aria-label="More (shouldn't exist)">
+          <!-- Removed "Saying too much goes against the theme." -->
+          <p class="subtitle" style="margin-top:0">
+            This section regrets existing.
+          </p>
+
+          <div class="mini">
+            <div class="row">
+              <div class="k">Is this advice?</div>
+              <div class="v">Absolutely not.</div>
+            </div>
+            <div class="row">
+              <div class="k">What happens next?</div>
+              <div class="v">Probably nothing.</div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <div class="fine">
+          Pointless Coin is pointless.
+          If you’re looking for meaning, you’re early — but also wrong.
+        </div>
+        <button id="panic" type="button">Remove words</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Ultra-mode: only this remains -->
+  <div class="ultra-only" aria-label="Pointless mark">• &lt;</div>
+
+  <!-- Buy modal -->
+  <div id="buyOverlay" class="modal-overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="buyTitle">
+      <div class="modal-head">
+        <div id="buyTitle" class="modal-title">Buy (pointless)</div>
+        <button class="modal-close" id="buyClose" type="button" aria-label="Close">×</button>
+      </div>
+
+      <div class="modal-body">
+        <a class="btn" href="https://dexscreener.com/avalanche/0x8fdbf33543799c2e4ccb6abd66a448365beae137" target="_blank" rel="noreferrer">
+          Dex Screener <span aria-hidden="true">↗</span>
+        </a>
+        <a class="btn" href="https://lfj.gg/avalanche/swap?outputCurrency=0xeBaC318D33b48948FbDEECd6139D86c1A3c6D69a" target="_blank" rel="noreferrer">
+          LFJ <span aria-hidden="true">↗</span>
+        </a>
+        <a class="btn" href="https://arena.trade/token/0xebac318d33b48948fbdeecd6139d86c1a3c6d69a" target="_blank" rel="noreferrer">
+          Arena Trade <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+
+      <div class="modal-foot">
+        Probably.
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // Real CA
+    const CONTRACT_ADDRESS = "0xeBaC318D33b48948FbDEECd6139D86c1A3c6D69a";
+
+    const toast = document.getElementById("toast");
+    const more = document.getElementById("more");
+
+    const buyOverlay = document.getElementById("buyOverlay");
+    const buyClose = document.getElementById("buyClose");
+    const buyBtn = document.getElementById("buy");
+
+    const pointlessLines = [
+      "There is no point.",
+      "This is not a pitch.",
+      "It exists. Unfortunately.",
+      "No utility. No apology.",
+      "Meaning sold separately.",
+      "Roadmap: blank.",
+      "Probably nothing.",
+      "Yes. But also no."
+    ];
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(showToast.t);
+      showToast.t = setTimeout(() => toast.classList.remove("show"), 1500);
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        try {
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          ta.setAttribute("readonly", "");
+          ta.style.position = "fixed";
+          ta.style.top = "-9999px";
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          ta.remove();
+          return true;
+        } catch {
+          return false;
+        }
+      }
+    }
+
+    document.getElementById("copyCa").addEventListener("click", async () => {
+      const ok = await copyText(CONTRACT_ADDRESS);
+      showToast(ok ? "Copied. (why?)" : "Couldn’t copy.");
+    });
+
+    // Buy modal open/close
+    function openBuy() {
+      buyOverlay.classList.add("open");
+      buyOverlay.setAttribute("aria-hidden", "false");
+      buyClose.focus();
+    }
+
+    function closeBuy() {
+      buyOverlay.classList.remove("open");
+      buyOverlay.setAttribute("aria-hidden", "true");
+      buyBtn.focus();
+    }
+
+    buyBtn.addEventListener("click", () => openBuy());
+    buyClose.addEventListener("click", () => closeBuy());
+
+    // click outside modal closes
+    buyOverlay.addEventListener("click", (e) => {
+      if (e.target === buyOverlay) closeBuy();
+    });
+
+    // Random statement
+    document.getElementById("random").addEventListener("click", () => {
+      showToast(pointlessLines[Math.floor(Math.random() * pointlessLines.length)]);
+    });
+
+    // Blank button: remove everything, leave only the mark centered
+    document.getElementById("ultraBtn").addEventListener("click", () => {
+      document.body.classList.add("ultra");
+    });
+
+    document.getElementById("panic").addEventListener("click", () => {
+      more.classList.add("hidden");
+      document.querySelectorAll(".subtitle, .mini, .fine").forEach(el => el.classList.add("hidden"));
+      showToast("Removed.");
+    });
+
+    // ESC closes modal (and only the modal)
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && buyOverlay.classList.contains("open")) {
+        closeBuy();
+      }
+    });
+  </script>
+</body>
+</html>
